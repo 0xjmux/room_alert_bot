@@ -1,6 +1,9 @@
 # Private project credentials
 _creds_.py
 
+# ignore vim swap files
+*.swp
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
