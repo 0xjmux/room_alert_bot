@@ -21,10 +21,13 @@ G_LED = 22
 
 #initialize gpio
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(buttonPin,GPIO.IN)
+GPIO.setup(switch_pin,GPIO.IN)
 GPIO.setup(R_LED,GPIO.OUT)
 GPIO.setup(G_LED,GPIO.OUT)
 
+
+
+print("Script initilized, waiting for switch input")
 prev_input = 0
 
 client = discord.Client()
@@ -33,23 +36,27 @@ client = discord.Client()
 #async def on_ready():
 #    print('We have logged in as {0.user}'.format(client))
 
-
 try:
     while True:
-        #assuming the script to call is long enough we can ignore bouncing
-        if (GPIO.input(buttonPin)):
-                #take a reading
-                input = GPIO.input(17)
-                #if the last reading was low and this one high, print
-                print(input)
-                if (prev_input != input):
-                        print("Switch changed")
-                GPIO.output(R_LED,GPIO.HIGH)
-                GPIO.output(G_LED,GPIO.HIGH)
-                #update previous input
-                prev_input = input
-                #slight pause to debounce
-                time.sleep(0.05)
+        input = GPIO.input(17)
+
+        # triggers on switch going high
+        if (GPIO.input(switch_pin) == GPIO.HIGH):
+
+            if prev_input != 1:
+                prev_input = 1
+                print("Switch ON!")
+
+            GPIO.output(R_LED,GPIO.HIGH)
+            GPIO.output(G_LED,GPIO.HIGH)
+            time.sleep(0.05)
+        else:
+            if prev_input != 0:
+                prev_input = 0
+                print("Switch OFF!")
+            GPIO.output(R_LED,GPIO.LOW)
+            GPIO.output(G_LED,GPIO.LOW)
+            time.sleep(0.05)
 
 
 except KeyboardInterrupt:          # trap a CTRL+C keyboard interrupt
