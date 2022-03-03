@@ -8,7 +8,13 @@
 ########################################
 
 import requests
+import smtplib, ssl # for sending email
+import os
+
 import _creds_
+
+
+port = 465  # For SSL
 
 def main():
     # used for testing alerting systems
@@ -22,6 +28,9 @@ def main():
     if send_room_alert("closed"):
         print("send room closed succeeded!")
     
+    print("testing sending email")
+    if send_email(1, "script test; disregard"):
+        print("sending email succeeded!")
 
 
 def send_room_alert(alert_code):
@@ -41,6 +50,24 @@ def send_room_alert(alert_code):
     else:
         print("Success, HTTP code {}.".format(result.status_code))
         return True
+
+# send error email
+def send_email(fail_count, error_desc):
+    message = """\
+Subject: IEEE Bot Error
+
+
+Number of failed send attempts: {}
+Error description: {}
+Uptime: {}
+
+This message was sent by an automated system.""".format(fail_count, error_desc, os.popen('uptime -p').read()[:-1])
+
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(_creds_.smtp_server, port, context=context) as server:
+        server.login(_creds_.sender_email, _creds_.password)
+        result = server.sendmail(_creds_.sender_email, _creds_.receiver_email, message)
+        print(result)
 
 
 # JSON data for the discord webhooks

@@ -11,7 +11,8 @@
 import RPi.GPIO as GPIO
 import time
 import os
-import requests
+import requests     # for webhook requests
+import json         # used for checking discord status page
 
 import messenger
 import _creds_ # creds is separate file used to store secrets
@@ -28,6 +29,7 @@ GPIO.setup(R_LED,GPIO.OUT)
 GPIO.setup(G_LED,GPIO.OUT)
 
 def main():
+    start_time = time.time()
 
     # script initialization block
     print("Script initilized, waiting for switch input")
@@ -37,6 +39,7 @@ def main():
     prev_input = 0
     message_success = False
     fail_count = 0              # number of failed attempts
+    last_email_time = 0
 
 
     # zero out status LEDs 
@@ -86,7 +89,23 @@ def main():
                         fail_count += 1
                 time.sleep(0.05)
 
-            # ADD CODE TO CHECK FOR HIGH FAIL COUNT, SEND EMAIL
+            # if 5 failures occur and email hasn't been sent for 2 hours, send another
+            
+            if fail_count > 4:
+                print("failed again, fail_count: " + fail_count)
+                error_desc = "high fail count"          # default error desc
+
+                if id_discord_broke():
+                    error_desc = "Discord status page reporting issues"
+
+
+                if (time.time() - last_email_time > 7200):
+                    print("sending error email message")
+                    send_email(fail_count, "high fail count")
+
+                print("failures over 5, blinking LEDs")
+                LEDs_blink()
+                time.sleep(0.5)
 
     except KeyboardInterrupt:          # trap a CTRL+C keyboard interrupt
         GPIO.cleanup()
@@ -117,5 +136,18 @@ def LEDs_blink():
     GPIO.output(G_LED,GPIO.LOW)
     time.sleep(0.25)
 
+# check if discord is showing issues on their status page
+def is_discord_broke():
+    d_json = requests.get("https://discordstatus.com/api/v2/status.json")
+    d_dict = json.loads(d_json.content)
+    d_status = d_dict['status']['description']
+    if not d_status = "All Systems Operational":
+        print("Discord status page reporting issues")
+        print("Discord status: " + d_status)
+        return True
+
+    return False
+
 if __name__=="__main__":
     main()
+
