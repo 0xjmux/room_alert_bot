@@ -4,7 +4,7 @@
 # UCI IEEE, Nov 2021
 #
 # This component of the program handles sending 
-# alert messages, over discord 
+# alert messages, over discord and email
 ########################################
 
 import requests
@@ -14,11 +14,10 @@ import time
 
 import _creds_
 
-
-port = 465  # For SSL
+port = 465  # For SMTP SSL
 
 def main():
-    # used for testing alerting systems
+    # used for testing all relevant alerting systems
     print("the main of messenger.py should NOT be called in normal operation")
 
     print("testing send_room_open")
@@ -35,28 +34,27 @@ def main():
 
 
 def send_room_alert(alert_code):
+    # set alert_code = whatever json packet we're going to use 
     if alert_code == "open":
-        # this line is the one that throws an error when a connection fails
-        try:
-            result = requests.post(_creds_.WEBHOOK_URL, json = open_data)
-        except ConnectionError as err:
-            print("ConnectionError: " + err)
-            time.sleep(1)       # prevent overloading server with requests
-            return False, err
-
-
-# NOT YET UPDATED
+        json_data = open_data
     elif alert_code == "closed":
-        result = requests.post(_creds_.WEBHOOK_URL, json = closed_data)
+        json_data = closed_data
     else:
-        reason = "invalid alert_code passed to send_room_alert"
-        print(reason)
-        return False, reason
+        json_data = interp_error_data
+
+        # this line is the one that throws an error when a connection fails
+    try:
+        result = requests.post(_creds_.WEBHOOK_URL, json = json_data)
+    except ConnectionError as err:
+        print("ConnectionError: " + err)
+        time.sleep(1)       # prevent overloading server with requests
+        return False, err
 
     try:
         result.raise_for_status()
     except requests.exceptions.HTTPError as err:
         print(err)
+        time.sleep(1)       # prevent overloading server with requests
         return False, err
     else:
         print("Success, HTTP code {}.".format(result.status_code))
@@ -65,8 +63,7 @@ def send_room_alert(alert_code):
 # send error email
 def send_email(fail_count, error_desc):
     message = """\
-Subject: IEEE Bot Error
-
+Subject: IEEE Lab Sentinel Bot Error
 
 Number of failed send attempts: {}
 Error description: {}
@@ -74,15 +71,22 @@ Uptime: {}
 
 This message was sent by an automated system.""".format(fail_count, error_desc, os.popen('uptime -p').read()[:-1])
 
-    print(message)
-#    context = ssl.create_default_context()
-#    with smtplib.SMTP_SSL(_creds_.smtp_server, port, context=context) as server:
-#        server.login(_creds_.sender_email, _creds_.password)
-#        result = server.sendmail(_creds_.sender_email, _creds_.receiver_email, message)
-#        print(result)
+    try:
+        # try sending email
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(_creds_.smtp_server, port, context=context) as server:
+            server.login(_creds_.sender_email, _creds_.password)
+            result = server.sendmail(_creds_.sender_email, _creds_.receiver_email, message)
+            print("Server sendmail result: " + result)
+    except Exception as err:
+        print("Error sending email! We received: " + err)
+        return False
+    else:
+        print("Email sent successfully")
+        return True
 
 
-# JSON data for the discord webhooks
+# JSON data packets for the discord message webhooks
 open_data = {
     "content" : "Looks like the IEEE Room is open! :sunglasses:",
     "username" : "IEEE Lab Sentinel"
@@ -102,6 +106,12 @@ poweroff_data = {
     "content" : "Time for a graceful shutdown :(",
     "username" : "IEEE Lab Sentinel"
 }
+
+interp_error_data = {
+    "content" : "Looks like we ran into an error and I'm not sure what to send out :(",
+    "username" : "IEEE Lab Sentinel"
+}
+
 
 if __name__=="__main__":
     main()

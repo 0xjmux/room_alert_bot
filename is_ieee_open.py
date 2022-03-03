@@ -143,11 +143,11 @@ def LEDs_blink():
 
 # check if discord is showing issues on their status page
 def is_discord_broke():
-        try:
-            d_json = requests.get("https://discordstatus.com/api/v2/status.json", timeout=5)
-        except ConnectionError as err:
-            print("ConnectionError: " + err)
-            return False, err
+    try:
+        d_json = requests.get("https://discordstatus.com/api/v2/status.json", timeout=5)
+    except ConnectionError as err:
+        print("ConnectionError: " + err)
+        return False, err
 
     d_dict = json.loads(d_json.content)
     d_status = d_dict['status']['description']
