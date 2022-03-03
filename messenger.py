@@ -10,6 +10,7 @@
 import requests
 import smtplib, ssl # for sending email
 import os
+import time
 
 import _creds_
 
@@ -40,8 +41,11 @@ def send_room_alert(alert_code):
             result = requests.post(_creds_.WEBHOOK_URL, json = open_data)
         except ConnectionError as err:
             print("ConnectionError: " + err)
+            time.sleep(1)       # prevent overloading server with requests
             return False, err
 
+
+# NOT YET UPDATED
     elif alert_code == "closed":
         result = requests.post(_creds_.WEBHOOK_URL, json = closed_data)
     else:

@@ -70,6 +70,7 @@ def main():
                         fail_count = 0
                     else:
                         print("UHOH, sending message failed")
+                        print("Error: " + str(b))
                         fail_count += 1
 
 
@@ -142,7 +143,12 @@ def LEDs_blink():
 
 # check if discord is showing issues on their status page
 def is_discord_broke():
-    d_json = requests.get("https://discordstatus.com/api/v2/status.json")
+        try:
+            d_json = requests.get("https://discordstatus.com/api/v2/status.json", timeout=5)
+        except ConnectionError as err:
+            print("ConnectionError: " + err)
+            return False, err
+
     d_dict = json.loads(d_json.content)
     d_status = d_dict['status']['description']
     if not d_status == "All Systems Operational":
