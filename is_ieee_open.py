@@ -18,8 +18,6 @@ import _creds_ # creds is separate file used to store secrets
 
 # variable defs
 switch_pin = 17 
-message_success = False
-fail_count = 0              # number of failed attempts
 R_LED = 27
 G_LED = 22
 
@@ -34,7 +32,16 @@ def main():
     # script initialization block
     print("Script initilized, waiting for switch input")
     LEDs_blink()
+
+    # state tracking
     prev_input = 0
+    message_success = False
+    fail_count = 0              # number of failed attempts
+
+
+    # zero out status LEDs 
+    GPIO.output(R_LED,GPIO.LOW)
+    GPIO.output(G_LED,GPIO.LOW)
 
     try:
         while True:
@@ -47,7 +54,8 @@ def main():
                     prev_input = 1
                     print("Switch Position ON!")
 
-                if not message_success:        # if function returns false, sending was unsuccessful
+                if not message_success:        # if message was already successfully sent, don't sent another
+                    # if function returns false, sending was unsuccessful
                     if messenger.send_room_alert("open"):
                         print("message sending success, turning LEDs to OCCUPIED state now")
                         LEDs_state_occupied()
@@ -66,7 +74,8 @@ def main():
                     prev_input = 0
                     print("Switch Position OFF!")
 
-                if not message_success:        # if function returns false, sending was unsuccessful
+                if not message_success:        # if message was already successfully sent, don't sent another
+                    # if function returns false, sending was unsuccessful
                     if messenger.send_room_alert("closed"):
                         print("message sending success, turning LEDs to VACANT state now")
                         LEDs_state_vacant()
@@ -90,11 +99,13 @@ def main():
 def LEDs_state_occupied():
     GPIO.output(R_LED,GPIO.LOW)
     GPIO.output(G_LED,GPIO.HIGH)
+    time.sleep(0.05)
 
 # turns LEDs into position for switch OFF, room VACANT
 def LEDs_state_vacant():
     GPIO.output(R_LED,GPIO.HIGH)
     GPIO.output(G_LED,GPIO.LOW)
+    time.sleep(0.05)
 
 # blinks both status LEDs once
 def LEDs_blink():
