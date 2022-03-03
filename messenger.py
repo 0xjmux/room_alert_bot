@@ -39,14 +39,15 @@ def send_room_alert(alert_code):
     elif alert_code == "closed":
         result = requests.post(_creds_.WEBHOOK_URL, json = closed_data)
     else:
-        print("invalid alert_code passed to send_room_alert");
-        return False
+        reason = "invalid alert_code passed to send_room_alert"
+        print(reason)
+        return False, reason
 
     try:
         result.raise_for_status()
     except requests.exceptions.HTTPError as err:
         print(err)
-        return False
+        return False, reason
     else:
         print("Success, HTTP code {}.".format(result.status_code))
         return True

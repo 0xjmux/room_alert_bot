@@ -46,6 +46,8 @@ def main():
     GPIO.output(R_LED,GPIO.LOW)
     GPIO.output(G_LED,GPIO.LOW)
 
+    error_desc = "high fail count"          # default error desc
+
     try:
         while True:
 
@@ -59,7 +61,9 @@ def main():
 
                 if not message_success:        # if message was already successfully sent, don't sent another
                     # if function returns false, sending was unsuccessful
-                    if messenger.send_room_alert("open"):
+                    a,b = messenger.send_room_alert("open")
+                    error_desc = b
+                    if a:
                         print("message sending success, turning LEDs to OCCUPIED state now")
                         LEDs_state_occupied()
                         message_success = True 
@@ -93,7 +97,6 @@ def main():
             
             if fail_count > 4:
                 print("failed again, fail_count: " + str(fail_count))
-                error_desc = "high fail count"          # default error desc
 
                 if is_discord_broke():
                     error_desc = "Discord status page reporting issues"
