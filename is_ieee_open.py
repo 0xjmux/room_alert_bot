@@ -39,8 +39,8 @@ def main():
     try:
         while True:
 
-            # triggers on switch going high
-            if (GPIO.input(switch_pin) == GPIO.HIGH):
+            # switch is now "ON". it's backwards, I know. 
+            if (GPIO.input(switch_pin) == GPIO.LOW):
 
                 if prev_input != 1:
                     message_success = False
@@ -50,7 +50,7 @@ def main():
                 if not message_success:        # if function returns false, sending was unsuccessful
                     if messenger.send_room_alert("open"):
                         print("message sending success, turning LEDs to OCCUPIED state now")
-                        LEDs_state_occupied
+                        LEDs_state_occupied()
                         message_success = True 
                         fail_count = 0
                     else:
@@ -69,7 +69,7 @@ def main():
                 if not message_success:        # if function returns false, sending was unsuccessful
                     if messenger.send_room_alert("closed"):
                         print("message sending success, turning LEDs to VACANT state now")
-                        LEDs_state_occupied
+                        LEDs_state_vacant()
                         message_success = True 
                         fail_count = 0
                     else:

@@ -55,12 +55,12 @@ closed_data = {
 }
 
 poweron_data = {
-    "content" : "Powering on!"
+    "content" : "Powering on!",
     "username" : "IEEE Lab Sentinel"
 }
 
 poweroff_data = {
-    "content" : "Time for a graceful shutdown :("
+    "content" : "Time for a graceful shutdown :(",
     "username" : "IEEE Lab Sentinel"
 }
 
