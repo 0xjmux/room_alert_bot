@@ -35,7 +35,13 @@ def main():
 
 def send_room_alert(alert_code):
     if alert_code == "open":
-        result = requests.post(_creds_.WEBHOOK_URL, json = open_data)
+        # this line is the one that throws an error when a connection fails
+        try:
+            result = requests.post(_creds_.WEBHOOK_URL, json = open_data)
+        except ConnectionError as err:
+            print("ConnectionError: " + err)
+            return False, err
+
     elif alert_code == "closed":
         result = requests.post(_creds_.WEBHOOK_URL, json = closed_data)
     else:
@@ -47,7 +53,7 @@ def send_room_alert(alert_code):
         result.raise_for_status()
     except requests.exceptions.HTTPError as err:
         print(err)
-        return False, reason
+        return False, err
     else:
         print("Success, HTTP code {}.".format(result.status_code))
         return True
