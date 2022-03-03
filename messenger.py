@@ -70,6 +70,7 @@ Uptime: {}
 
 This message was sent by an automated system.""".format(fail_count, error_desc, os.popen('uptime -p').read()[:-1])
 
+    print(message)
 #    context = ssl.create_default_context()
 #    with smtplib.SMTP_SSL(_creds_.smtp_server, port, context=context) as server:
 #        server.login(_creds_.sender_email, _creds_.password)
