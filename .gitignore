@@ -1,6 +1,8 @@
 # Private project credentials
-#_creds_.py
-#_email_creds_.py
+_*
+_creds_.py
+_email_creds_.py
+testscripts/
 
 # ignore vim swap files
 *.swp
