@@ -92,16 +92,17 @@ def main():
             # if 5 failures occur and email hasn't been sent for 2 hours, send another
             
             if fail_count > 4:
-                print("failed again, fail_count: " + fail_count)
+                print("failed again, fail_count: " + str(fail_count))
                 error_desc = "high fail count"          # default error desc
 
-                if id_discord_broke():
+                if is_discord_broke():
                     error_desc = "Discord status page reporting issues"
 
 
                 if (time.time() - last_email_time > 7200):
                     print("sending error email message")
-                    send_email(fail_count, "high fail count")
+                    messenger.send_email(fail_count, error_desc)
+                    last_email_time = time.time()
 
                 print("failures over 5, blinking LEDs")
                 LEDs_blink()
@@ -141,7 +142,7 @@ def is_discord_broke():
     d_json = requests.get("https://discordstatus.com/api/v2/status.json")
     d_dict = json.loads(d_json.content)
     d_status = d_dict['status']['description']
-    if not d_status = "All Systems Operational":
+    if not d_status == "All Systems Operational":
         print("Discord status page reporting issues")
         print("Discord status: " + d_status)
         return True
