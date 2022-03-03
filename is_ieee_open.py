@@ -46,16 +46,15 @@ def main():
                     prev_input = 1
                     print("Switch Position ON!")
 
-                if !message_success:        # if function returns false, sending was unsuccessful
-                    if messenger.send_room_open():
-                        print("message sending success, changing LEDs now")
+                if not message_success:        # if function returns false, sending was unsuccessful
+                    if messenger.send_room_alert("open"):
+                        print("message sending success, turning LEDs into OCCUPIED state now")
+                        turn_LEDS_ON()
                         message_success = True 
                         fail_count = 0
-                        GPIO.output(R_LED,GPIO.LOW)
-                        GPIO.output(G_LED,GPIO.HIGH)
                     else:
                         print("UHOH, sending message failed")
-                        fail_count++
+                        fail_count += 1
 
             # ADD CODE TO CHECK FOR HIGH FAIL COUNT, SEND EMAIL
 
@@ -68,8 +67,6 @@ def main():
                     print("Switch Position OFF!")
 
                 messenger.send_room_closed()
-                GPIO.output(R_LED,GPIO.HIGH)
-                GPIO.output(G_LED,GPIO.LOW)
                 time.sleep(0.05)
 
 
@@ -79,5 +76,17 @@ def main():
     finally:
         print("clean up")
         GPIO.cleanup()
-       
 
+# turns LEDs into position for switch ON, room OCCUPIED
+def turn_LEDS_ON():
+    GPIO.output(R_LED,GPIO.LOW)
+    GPIO.output(G_LED,GPIO.HIGH)
+
+# turns LEDs into position for switch OFF, room EMPTY
+def turn_LEDS_OFF():
+    GPIO.output(R_LED,GPIO.HIGH)
+    GPIO.output(G_LED,GPIO.LOW)
+
+
+if __name__=="__main__":
+    main()
