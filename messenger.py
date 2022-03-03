@@ -54,6 +54,15 @@ closed_data = {
     "username" : "IEEE Lab Sentinel"
 }
 
+poweron_data = {
+    "content" : "Powering on!"
+    "username" : "IEEE Lab Sentinel"
+}
+
+poweroff_data = {
+    "content" : "Time for a graceful shutdown :("
+    "username" : "IEEE Lab Sentinel"
+}
 
 if __name__=="__main__":
     main()

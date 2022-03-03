@@ -16,23 +16,24 @@ import requests
 import messenger
 import _creds_ # creds is separate file used to store secrets
 
+# variable defs
+switch_pin = 17 
+message_success = False
+fail_count = 0              # number of failed attempts
+R_LED = 27
+G_LED = 22
+
+#initialize gpio
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(switch_pin,GPIO.IN)
+GPIO.setup(R_LED,GPIO.OUT)
+GPIO.setup(G_LED,GPIO.OUT)
+
 def main():
-    # variable defs
-    switch_pin = 17 
-    message_success = False
-    fail_count = 0              # number of failed attempts
-    R_LED = 27
-    G_LED = 22
 
-    #initialize gpio
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(switch_pin,GPIO.IN)
-    GPIO.setup(R_LED,GPIO.OUT)
-    GPIO.setup(G_LED,GPIO.OUT)
-
-
-
+    # script initialization block
     print("Script initilized, waiting for switch input")
+    LEDs_blink()
     prev_input = 0
 
     try:
@@ -48,15 +49,14 @@ def main():
 
                 if not message_success:        # if function returns false, sending was unsuccessful
                     if messenger.send_room_alert("open"):
-                        print("message sending success, turning LEDs into OCCUPIED state now")
-                        turn_LEDS_ON()
+                        print("message sending success, turning LEDs to OCCUPIED state now")
+                        LEDs_state_occupied
                         message_success = True 
                         fail_count = 0
                     else:
                         print("UHOH, sending message failed")
                         fail_count += 1
 
-            # ADD CODE TO CHECK FOR HIGH FAIL COUNT, SEND EMAIL
 
                 time.sleep(0.05)
             else:
@@ -66,9 +66,18 @@ def main():
                     prev_input = 0
                     print("Switch Position OFF!")
 
-                messenger.send_room_closed()
+                if not message_success:        # if function returns false, sending was unsuccessful
+                    if messenger.send_room_alert("closed"):
+                        print("message sending success, turning LEDs to VACANT state now")
+                        LEDs_state_occupied
+                        message_success = True 
+                        fail_count = 0
+                    else:
+                        print("UHOH, sending message failed")
+                        fail_count += 1
                 time.sleep(0.05)
 
+            # ADD CODE TO CHECK FOR HIGH FAIL COUNT, SEND EMAIL
 
     except KeyboardInterrupt:          # trap a CTRL+C keyboard interrupt
         GPIO.cleanup()
@@ -78,15 +87,24 @@ def main():
         GPIO.cleanup()
 
 # turns LEDs into position for switch ON, room OCCUPIED
-def turn_LEDS_ON():
+def LEDs_state_occupied():
     GPIO.output(R_LED,GPIO.LOW)
     GPIO.output(G_LED,GPIO.HIGH)
 
-# turns LEDs into position for switch OFF, room EMPTY
-def turn_LEDS_OFF():
+# turns LEDs into position for switch OFF, room VACANT
+def LEDs_state_vacant():
     GPIO.output(R_LED,GPIO.HIGH)
     GPIO.output(G_LED,GPIO.LOW)
 
+# blinks both status LEDs once
+def LEDs_blink():
+    GPIO.output(R_LED,GPIO.HIGH)
+    GPIO.output(G_LED,GPIO.HIGH)
+    time.sleep(0.25)
+
+    GPIO.output(R_LED,GPIO.LOW)
+    GPIO.output(G_LED,GPIO.LOW)
+    time.sleep(0.25)
 
 if __name__=="__main__":
     main()
