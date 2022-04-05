@@ -78,6 +78,12 @@ def main():
                 LEDs_blink()
                 time.sleep(2)
 
+            # things aren't going well. lets slow our roll
+            if fail_count > 30:
+                print("Failures over 30, slowing down retries. Blinking LEDs. Fail_count: " + str(fail_count))
+                LEDs_blink()
+                time.sleep(20)
+
         # reset message success value and start the main loop
         message_success = False
         while True:
@@ -133,12 +139,18 @@ def main():
 
             # if 5 failures occur and email hasn't been sent for 4 hours, send another
             
-            if fail_count > 4:
-                print("failed again, fail_count: " + str(fail_count))
+            # things aren't going well. lets slow our roll
+            if fail_count > 30:
+                print("Failures over 30, slowing down retries. Blinking LEDs. Fail_count: " + str(fail_count))
+                LEDs_blink()
+                time.sleep(20)
 
-                print("failures over 5, blinking LEDs")
+            elif fail_count > 4:
+                print("Failures over 5, blinking LEDs. " + str(fail_count))
+
                 LEDs_blink()
 
+            if fail_count > 4:
                 if is_discord_broke():
                     error_desc = "Discord status page reporting issues"
 
