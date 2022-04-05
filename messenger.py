@@ -66,7 +66,7 @@ def send_room_alert(alert_code):
         return False, err
     else:
         print("Success, HTTP code {}.".format(result.status_code))
-        return True
+        return True, "none"
 
 # send error email
 def send_email(fail_count, error_desc):

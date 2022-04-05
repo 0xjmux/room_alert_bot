@@ -8,7 +8,8 @@ Flip switch "On" to send a discord message alerting people the room is open. Fli
 * Extract & Install on pi. Install `requests` library through pip.
 * You need to rename `creds_CHANGEME.py` to `_creds_.py` and add your discord webhook to the `WEBHOOK_URL` field in the file. 
 
-
+### General Info
+* Program logs are located at `/var/log/ieee_room_alert/`
 
 ### Indicator Light Behavior
 * When operating correctly, only one light should be on at a time. The lights will ONLY change once a message has successfully been posted to discord.

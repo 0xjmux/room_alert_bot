@@ -34,6 +34,10 @@ GPIO.setup(G_LED,GPIO.OUT)
 def main():
     start_time = time.time()
 
+    # setup logging
+    os.mkdir('/var/log/ieee_room_alert', mode=0o700)
+
+
     # script initialization block
     print("Script initilized, waiting for switch input")
     LEDs_blink()
@@ -75,9 +79,10 @@ def main():
                         print("UHOH, sending message failed")
                         print("Error: " + str(b))
                         fail_count += 1
-
+                        time.sleep(2)
 
                 time.sleep(0.05)
+
             else:
             # switch now low
                 if prev_input != 0:
@@ -87,14 +92,19 @@ def main():
 
                 if not message_success:        # if message was already successfully sent, don't sent another
                     # if function returns false, sending was unsuccessful
-                    if messenger.send_room_alert("closed"):
+                    a,b = messenger.send_room_alert("closed")
+                    error_desc = b
+                    if a:
                         print("message sending success, turning LEDs to VACANT state now")
                         LEDs_state_vacant()
-                        message_success = True 
+                        message_success = True
                         fail_count = 0
                     else:
                         print("UHOH, sending message failed")
+                        print("Error: " + str(b))
                         fail_count += 1
+                        time.sleep(2)
+
                 time.sleep(0.05)
 
             # if 5 failures occur and email hasn't been sent for 2 hours, send another
