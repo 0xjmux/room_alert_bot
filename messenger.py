@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 ########################################
 # is_ieee_open.py
-# UCI IEEE, Nov 2021
+# jbokor@uci.edu, April 2022
 #
-# This component of the program handles sending 
+# This component of the program handles sending
 # alert messages, over discord and email
 ########################################
 
@@ -18,7 +18,12 @@ port = 465  # For SMTP SSL
 
 def main():
     # used for testing all relevant alerting systems
-    print("the main of messenger.py should NOT be called in normal operation")
+    print("The main of messenger.py should NOT be called in normal operation. ")
+    print("Testing messenger functionality: ")
+
+    print("trying to send discord testing message")
+    if send_room_alert("test"):
+        print("send test message alert succeeded!")
 
     print("testing send_room_open")
     if send_room_alert("open"):
@@ -27,9 +32,10 @@ def main():
     print("testing send_room_closed")
     if send_room_alert("closed"):
         print("send room closed succeeded!")
-    
+
+
     print("testing sending email")
-    if send_email(1, "script test; disregard"):
+    if send_email(1, "SCRIPT TEST; DISREGARD"):
         print("sending email succeeded!")
 
 
@@ -39,6 +45,8 @@ def send_room_alert(alert_code):
         json_data = open_data
     elif alert_code == "closed":
         json_data = closed_data
+    elif alert_code == "test":
+        json_data = test_message
     else:
         json_data = interp_error_data
 
@@ -77,7 +85,8 @@ This message was sent by an automated system.""".format(fail_count, error_desc, 
         with smtplib.SMTP_SSL(_creds_.smtp_server, port, context=context) as server:
             server.login(_creds_.sender_email, _creds_.password)
             result = server.sendmail(_creds_.sender_email, _creds_.receiver_email, message)
-            print("Server sendmail result: " + result)
+            print("Server sendmail result: ", end="")
+            print(result)
     except Exception as err:
         print("Error sending email! We received: " + err)
         return False
@@ -112,6 +121,10 @@ interp_error_data = {
     "username" : "IEEE Lab Sentinel"
 }
 
+test_message = {
+    "content" : "Results of testing the messaging functionality on discord: ",
+    "username" : "IEEE Lab Sentinel"
+}
 
 if __name__=="__main__":
     main()

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 ########################################
 # is_ieee_open.py
-# UCI IEEE, Nov 2021
+# jbokor@uci.edu, April 2022
 #
-#  Small, quick python program written for 
-#  UCI IEEE to show whether the room is open or not 
-#  in the club's Discord server. 
+#  "Small", "quick" python program written for
+#  UCI IEEE to show whether the room is open or not
+#  in the club's Discord server.
 ########################################
 
 import RPi.GPIO as GPIO
@@ -13,9 +13,11 @@ import time
 import os
 import requests     # for webhook requests
 import json         # used for checking discord status page
+import logging      # gotta keep them logs
 
+# companion files
 import messenger
-import _creds_ # creds is separate file used to store secrets
+import _creds_ # creds is a separate file used to store secrets
 
 # variable defs
 switch_pin = 17 
@@ -27,6 +29,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(switch_pin,GPIO.IN)
 GPIO.setup(R_LED,GPIO.OUT)
 GPIO.setup(G_LED,GPIO.OUT)
+
 
 def main():
     start_time = time.time()
@@ -66,7 +69,7 @@ def main():
                     if a:
                         print("message sending success, turning LEDs to OCCUPIED state now")
                         LEDs_state_occupied()
-                        message_success = True 
+                        message_success = True
                         fail_count = 0
                     else:
                         print("UHOH, sending message failed")

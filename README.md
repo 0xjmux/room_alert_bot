@@ -16,3 +16,8 @@ Flip switch "On" to send a discord message alerting people the room is open. Fli
     * There should be a single blink on startup to indicate that the program has begun execution. 
     * On errors, they blink. 
 
+
+### TODO:
+* [ ] verify connection error handling works correctly
+* [ ] implement logging
+    * [ ] implement log rotation & sending via email
