@@ -35,7 +35,6 @@ def main():
     start_time = time.time()
 
     # setup logging
-    os.mkdir('/var/log/ieee_room_alert', mode=0o700)
 
 
     # script initialization block
@@ -56,6 +55,31 @@ def main():
     error_desc = "high fail count"          # default error desc
 
     try:
+
+        LEDs_blink()
+        LEDs_blink()
+
+        # this will run until the "powering up" message is sent successfully
+        while not message_success:
+            a,b = messenger.send_room_alert("poweron")
+            error_desc = b
+            if a:
+                print("sent initial message to discord, starting primary loop")
+                message_success = True
+                fail_count = 0
+            else:
+                print("Sending initial message failed")
+                print("Initial message sending error: " + str(b))
+                fail_count += 1
+                time.sleep(1)
+
+            if fail_count > 5:
+                print("failed again, blinking LEDs. Fail_count: " + str(fail_count))
+                LEDs_blink()
+                time.sleep(2)
+
+        # reset message success value and start the main loop
+        message_success = False
         while True:
 
             # switch is now "ON". it's backwards, I know. 
@@ -107,26 +131,31 @@ def main():
 
                 time.sleep(0.05)
 
-            # if 5 failures occur and email hasn't been sent for 2 hours, send another
+            # if 5 failures occur and email hasn't been sent for 4 hours, send another
             
             if fail_count > 4:
                 print("failed again, fail_count: " + str(fail_count))
 
+                print("failures over 5, blinking LEDs")
+                LEDs_blink()
+
                 if is_discord_broke():
                     error_desc = "Discord status page reporting issues"
 
+                LEDs_blink()
 
-                if (time.time() - last_email_time > 7200):
+                if (time.time() - last_email_time > 14400):
                     print("sending error email message")
                     messenger.send_email(fail_count, error_desc)
                     last_email_time = time.time()
 
-                print("failures over 5, blinking LEDs")
                 LEDs_blink()
+
                 time.sleep(0.5)
 
-    except KeyboardInterrupt:          # trap a CTRL+C keyboard interrupt
-        GPIO.cleanup()
+    except Exception as err:
+        print("Caught a big exception in the wild! Generic Exception: " + str(err))
+
 
     finally:
         print("clean up")
@@ -159,7 +188,12 @@ def is_discord_broke():
     try:
         d_json = requests.get("https://discordstatus.com/api/v2/status.json", timeout=5)
     except ConnectionError as err:
-        print("ConnectionError: " + err)
+        print("ConnectionError: " + str(err))
+        time.sleep(1)
+        return False, err
+    except Exception as err:
+        print("Generic Exception: " + str(err))
+        time.sleep(1)
         return False, err
 
     d_dict = json.loads(d_json.content)

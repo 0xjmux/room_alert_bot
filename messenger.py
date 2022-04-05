@@ -47,6 +47,8 @@ def send_room_alert(alert_code):
         json_data = closed_data
     elif alert_code == "test":
         json_data = test_message
+    elif alert_code == "poweron":
+        json_data = poweron_data
     else:
         json_data = interp_error_data
 
@@ -54,14 +56,23 @@ def send_room_alert(alert_code):
     try:
         result = requests.post(_creds_.WEBHOOK_URL, json = json_data)
     except ConnectionError as err:
-        print("ConnectionError: " + err)
+        print("ConnectionError: " + str(err))
         time.sleep(1)       # prevent overloading server with requests
         return False, err
+    except Exception as err:
+        print("Generic Exception: " + str(err))
+        time.sleep(1)       # prevent overloading server with requests
+        return False, err
+
 
     try:
         result.raise_for_status()
     except requests.exceptions.HTTPError as err:
         print(err)
+        time.sleep(1)       # prevent overloading server with requests
+        return False, err
+    except Exception as err:
+        print("Generic Exception: " + str(err))
         time.sleep(1)       # prevent overloading server with requests
         return False, err
     else:
@@ -88,7 +99,7 @@ This message was sent by an automated system.""".format(fail_count, error_desc, 
             print("Server sendmail result: ", end="")
             print(result)
     except Exception as err:
-        print("Error sending email! We received: " + err)
+        print("Error sending email! We received: " + str(err))
         return False
     else:
         print("Email sent successfully")
