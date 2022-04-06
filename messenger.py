@@ -11,6 +11,7 @@ import requests
 import smtplib, ssl # for sending email
 import os
 import time
+import logging
 
 import _creds_
 
@@ -56,11 +57,11 @@ def send_room_alert(alert_code):
     try:
         result = requests.post(_creds_.WEBHOOK_URL, json = json_data)
     except ConnectionError as err:
-        print("ConnectionError: " + str(err))
+        logging.info("ConnectionError: " + str(err))
         time.sleep(1)       # prevent overloading server with requests
         return False, err
     except Exception as err:
-        print("Generic Exception: " + str(err))
+        logging.info("Generic Exception: " + str(err))
         time.sleep(1)       # prevent overloading server with requests
         return False, err
 
@@ -68,15 +69,15 @@ def send_room_alert(alert_code):
     try:
         result.raise_for_status()
     except requests.exceptions.HTTPError as err:
-        print(err)
+        logging.info(err)
         time.sleep(1)       # prevent overloading server with requests
         return False, err
     except Exception as err:
-        print("Generic Exception: " + str(err))
+        logging.info("Generic Exception: " + str(err))
         time.sleep(1)       # prevent overloading server with requests
         return False, err
     else:
-        print("Success, HTTP code {}.".format(result.status_code))
+        logging.info("Success, HTTP code {}.".format(result.status_code))
         return True, "none"
 
 # send error email
@@ -96,13 +97,13 @@ This message was sent by an automated system.""".format(fail_count, error_desc, 
         with smtplib.SMTP_SSL(_creds_.smtp_server, port, context=context) as server:
             server.login(_creds_.sender_email, _creds_.password)
             result = server.sendmail(_creds_.sender_email, _creds_.receiver_email, message)
-            print("Server sendmail result: ", end="")
-            print(result)
+            logging.info("Server sendmail result: ", end="")
+            logging.info(result)
     except Exception as err:
-        print("Error sending email! We received: " + str(err))
+        logging.info("Error sending email! We received: " + str(err))
         return False
     else:
-        print("Email sent successfully")
+        logging.info("Email sent successfully")
         return True
 
 

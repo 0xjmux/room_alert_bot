@@ -35,10 +35,11 @@ def main():
     start_time = time.time()
 
     # setup logging
+    logging.basicConfig(filename='/var/log/ieee_room_alert/room_bot.log', level=logging.DEBUG)
 
 
     # script initialization block
-    print("Script initilized, waiting for switch input")
+    logging.info("Script initilized, waiting for switch input")
     LEDs_blink()
 
     # state tracking
@@ -64,23 +65,23 @@ def main():
             a,b = messenger.send_room_alert("poweron")
             error_desc = b
             if a:
-                print("sent initial message to discord, starting primary loop")
+                logging.info("sent initial message to discord, starting primary loop")
                 message_success = True
                 fail_count = 0
             else:
-                print("Sending initial message failed")
-                print("Initial message sending error: " + str(b))
+                logging.info("Sending initial message failed")
+                logging.info("Initial message sending error: " + str(b))
                 fail_count += 1
                 time.sleep(1)
 
             if fail_count > 5:
-                print("failed again, blinking LEDs. Fail_count: " + str(fail_count))
+                logging.info("failed again, blinking LEDs. Fail_count: " + str(fail_count))
                 LEDs_blink()
                 time.sleep(2)
 
             # things aren't going well. lets slow our roll
             if fail_count > 30:
-                print("Failures over 30, slowing down retries. Blinking LEDs. Fail_count: " + str(fail_count))
+                logging.info("Failures over 30, slowing down retries. Blinking LEDs. Fail_count: " + str(fail_count))
                 LEDs_blink()
                 time.sleep(20)
 
@@ -94,20 +95,20 @@ def main():
                 if prev_input != 1:
                     message_success = False
                     prev_input = 1
-                    print("Switch Position ON!")
+                    logging.info("Switch Position ON!")
 
                 if not message_success:        # if message was already successfully sent, don't sent another
                     # if function returns false, sending was unsuccessful
                     a,b = messenger.send_room_alert("open")
                     error_desc = b
                     if a:
-                        print("message sending success, turning LEDs to OCCUPIED state now")
+                        logging.info("message sending success, turning LEDs to OCCUPIED state now")
                         LEDs_state_occupied()
                         message_success = True
                         fail_count = 0
                     else:
-                        print("UHOH, sending message failed")
-                        print("Error: " + str(b))
+                        logging.info("UHOH, sending message failed")
+                        logging.info("Error: " + str(b))
                         fail_count += 1
                         time.sleep(2)
 
@@ -118,20 +119,20 @@ def main():
                 if prev_input != 0:
                     message_success = False
                     prev_input = 0
-                    print("Switch Position OFF!")
+                    logging.info("Switch Position OFF!")
 
                 if not message_success:        # if message was already successfully sent, don't sent another
                     # if function returns false, sending was unsuccessful
                     a,b = messenger.send_room_alert("closed")
                     error_desc = b
                     if a:
-                        print("message sending success, turning LEDs to VACANT state now")
+                        logging.info("message sending success, turning LEDs to VACANT state now")
                         LEDs_state_vacant()
                         message_success = True
                         fail_count = 0
                     else:
-                        print("UHOH, sending message failed")
-                        print("Error: " + str(b))
+                        logging.info("UHOH, sending message failed")
+                        logging.info("Error: " + str(b))
                         fail_count += 1
                         time.sleep(2)
 
@@ -141,12 +142,12 @@ def main():
             
             # things aren't going well. lets slow our roll
             if fail_count > 30:
-                print("Failures over 30, slowing down retries. Blinking LEDs. Fail_count: " + str(fail_count))
+                logging.info("Failures over 30, slowing down retries. Blinking LEDs. Fail_count: " + str(fail_count))
                 LEDs_blink()
                 time.sleep(20)
 
             elif fail_count > 4:
-                print("Failures over 5, blinking LEDs. " + str(fail_count))
+                logging.info("Failures over 5, blinking LEDs. " + str(fail_count))
 
                 LEDs_blink()
 
@@ -157,7 +158,7 @@ def main():
                 LEDs_blink()
 
                 if (time.time() - last_email_time > 14400):
-                    print("sending error email message")
+                    logging.info("sending error email message")
                     messenger.send_email(fail_count, error_desc)
                     last_email_time = time.time()
 
@@ -166,11 +167,11 @@ def main():
                 time.sleep(0.5)
 
     except Exception as err:
-        print("Caught a big exception in the wild! Generic Exception: " + str(err))
+        logging.info("Caught a big exception in the wild! Generic Exception: " + str(err))
 
 
     finally:
-        print("clean up")
+        logging.info("clean up")
         GPIO.cleanup()
 
 # turns LEDs into position for switch ON, room OCCUPIED
@@ -200,19 +201,19 @@ def is_discord_broke():
     try:
         d_json = requests.get("https://discordstatus.com/api/v2/status.json", timeout=5)
     except ConnectionError as err:
-        print("ConnectionError: " + str(err))
+        logging.info("ConnectionError: " + str(err))
         time.sleep(1)
         return False, err
     except Exception as err:
-        print("Generic Exception: " + str(err))
+        logging.info("Generic Exception: " + str(err))
         time.sleep(1)
         return False, err
 
     d_dict = json.loads(d_json.content)
     d_status = d_dict['status']['description']
     if not d_status == "All Systems Operational":
-        print("Discord status page reporting issues")
-        print("Discord status: " + d_status)
+        logging.info("Discord status page reporting issues")
+        logging.info("Discord status: " + d_status)
         return True
 
     return False
