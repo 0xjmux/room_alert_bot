@@ -83,7 +83,7 @@ def send_room_alert(alert_code):
 # send error email
 def send_email(fail_count, error_desc):
     message = """\
-Subject: IEEE Lab Sentinel Bot Error
+Subject: IEEE Room Alert Bot Notice
 
 Number of failed send attempts: {}
 Error description: {}
