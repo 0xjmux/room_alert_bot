@@ -35,7 +35,7 @@ def main():
     start_time = time.time()
 
     # setup logging
-    logging.basicConfig(format='%(asctime) %(levelname) %(message)s', filename='/var/log/room_alert_bot/room_bot.log', level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', filename='/var/log/room_alert_bot/room_bot.log', level=logging.INFO)
 
 
     # script initialization block
@@ -168,6 +168,9 @@ def main():
 
     except Exception as err:
         logging.info("Caught a big exception in the wild! Generic Exception: " + str(err))
+
+    except KeyboardInterrupt as err:
+        messenger.send_room_alert("closed")
 
 
     finally:

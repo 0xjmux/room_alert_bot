@@ -34,6 +34,8 @@ def main():
     if send_room_alert("closed"):
         print("send room closed succeeded!")
 
+    print("sending poweroff test")
+    send_room_alert("poweroff")
 
     print("testing sending email")
     if send_email(1, "SCRIPT TEST; DISREGARD"):
@@ -50,9 +52,10 @@ def send_room_alert(alert_code):
         json_data = test_message
     elif alert_code == "poweron":
         json_data = poweron_data
+    elif alert_code == "poweroff":
+        json_data = poweroff_data
     else:
         json_data = interp_error_data
-
         # this line is the one that throws an error when a connection fails
     try:
         result = requests.post(_creds_.WEBHOOK_URL, json = json_data)
@@ -77,7 +80,7 @@ def send_room_alert(alert_code):
         time.sleep(1)       # prevent overloading server with requests
         return False, err
     else:
-        logging.info("Success, HTTP code {}.".format(result.status_code))
+        logging.info(f'Success, HTTP code {result.status_code}.')
         return True, "none"
 
 # send error email
