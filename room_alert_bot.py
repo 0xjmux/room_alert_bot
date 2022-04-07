@@ -35,7 +35,7 @@ def main():
     start_time = time.time()
 
     # setup logging
-    logging.basicConfig(filename='/var/log/ieee_room_alert/room_bot.log', level=logging.DEBUG)
+    logging.basicConfig(format='%(asctime) %(levelname) %(message)s', filename='/var/log/room_alert_bot/room_bot.log', level=logging.INFO)
 
 
     # script initialization block
