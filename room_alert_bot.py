@@ -170,7 +170,8 @@ def main():
         logging.info("Caught a big exception in the wild! Generic Exception: " + str(err))
 
     except KeyboardInterrupt as err:
-        messenger.send_room_alert("closed")
+        messenger.send_room_alert("poweroff")
+        quit()
 
 
     finally:
