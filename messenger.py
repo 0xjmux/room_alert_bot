@@ -110,32 +110,32 @@ This message was sent by an automated system.""".format(fail_count, error_desc, 
 # JSON data packets for the discord message webhooks
 open_data = {
     "content" : "Looks like the IEEE Room is open! :sunglasses:",
-    "username" : "IEEE Lab Sentinel"
+    "username" : "IEEE Room Alert"
 }
 
 closed_data = {
     "content" : "Looks like the IEEE Room is no longer open :disappointed:",
-    "username" : "IEEE Lab Sentinel"
+    "username" : "IEEE Room Alert"
 }
 
 poweron_data = {
     "content" : "Powering on!",
-    "username" : "IEEE Lab Sentinel"
+    "username" : "IEEE Room Alert"
 }
 
 poweroff_data = {
     "content" : "Time for a graceful shutdown :(",
-    "username" : "IEEE Lab Sentinel"
+    "username" : "IEEE Room Alert"
 }
 
 interp_error_data = {
     "content" : "Looks like we ran into an error and I'm not sure what to send out :(",
-    "username" : "IEEE Lab Sentinel"
+    "username" : "IEEE Room Alert"
 }
 
 test_message = {
     "content" : "Results of testing the messaging functionality on discord: ",
-    "username" : "IEEE Lab Sentinel"
+    "username" : "IEEE Room Alert"
 }
 
 if __name__=="__main__":
