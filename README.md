@@ -11,8 +11,8 @@ So, to fix this admittedly minor inconvenience, I built a completely over engine
 ### Usage
 Flip switch "On" to send a discord message alerting people the room is open. Flip switch "Off" to send a message alerting people that the room is closed. 
 
-<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/red.JPG" width=50% height=50%>
 <img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/green.JPG" width=50% height=50%>
+<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/red.JPG" width=50% height=50%>
 
 ### Indicator Light Behavior
 * When operating correctly, only one light should be on at a time. The lights will ONLY change once a message has successfully been posted to discord.
