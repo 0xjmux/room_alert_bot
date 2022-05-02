@@ -1,18 +1,18 @@
 # room_alert_bot
 Physical switch connected to a Discord bot to alert people in the IEEE UCI Discord when the room is open. 
 
-![alt: picture of the switch mounted on a pole](img/final_mounted.JPG)
+<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/final_mounted.JPG" width=80% height=80%>
 
 ### Why?
 I manage the lab room for the IEEE student chapter at UCI. We run a program called Open Project Space, or OPS, where we teach fellow students the basics of electronics and microcontrollers in a hands on fashion. Part of the program is students coming in to get help on their current projects, and the problem we kept running into was students asking if someone was in the room so that they could get help with their project. 
 
 So, to fix this admittedly minor inconvenience, I built a completely over engineered solution :). 
 
-
 ### Usage
 Flip switch "On" to send a discord message alerting people the room is open. Flip switch "Off" to send a message alerting people that the room is closed. 
-![red light on](img/red.JPG)
-![green light on](img/green.JPG)
+
+<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/red.JPG" width=50% height=50%>
+<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/green.JPG" width=50% height=50%>
 
 ### Indicator Light Behavior
 * When operating correctly, only one light should be on at a time. The lights will ONLY change once a message has successfully been posted to discord.
@@ -21,24 +21,24 @@ Flip switch "On" to send a discord message alerting people the room is open. Fli
     * On errors, they blink. If there's a lost network connection, or discord's servers are down, or anything else has caused several errors to rack up, the lights should alert the user that something's not right. 
 
 
-
 ### FAQ
-### Why was it designed the way it was?
+#### Why was it designed the way it was?
 A significant part of the design choices I made kept in mind that this thing isn't going to be touched or maintained for the next few years at least. The hardware, software, and system setup are optimized and consciously designed to run on their own with little to no maintenance required for as long as possible.
 
 In addition, the hardware was designed to make any modifications or maintenance that need to be done as simple as possible. for example, the hardware is exclusively mounted on the lid of the project box; if maintenance needs to be done on the hardware for some reason, you just unscrew the 2 screws, disconnect the 2.1mm jack (which is connected via custom crimped dupont to make that easy) and then the hardware can be taken wherever to be worked on, with the rest of the case still mounted to the wall.
 
 
-### How does it work?
+#### How does it work?
 The design philosophy behind this was that I wanted it to be able to go on running as long as possible without any maintenance on the actual device. I predict that this is going to sit on the network long after I leave UCI, and nobody's going to really touch it as long as it keeps working. 
 
 It runs on a Raspberry Pi Zero W, connected to Wifi. The electronics are really simple; it's really only a toggle switch, 2 LEDs, and a buck converter for DC step-down. It runs off ~12VDC, which was done for ease of use and because we 
 had plenty of 12V power supplies with 2.1mm barrel jacks. 
 
-![internals picture 1](img/internals_1.JPG)
-![internals picture 2](img/internals_2.JPG)
+<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/internals_1.JPG" width=50% height=50%>
+<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/internals_2.JPG" width=50% height=50%>
 
-#### What about the code?
+
+##### What about the code?
 It uses discord webhooks to send messages as HTTP POST requests, which means the connection is sort of asynchronous. It only reaches out to the server when it needs to send a message, and is quiet otherwise. In fact, the code *could* have been very simple; just see if the switch has changed position and then send the message. 
 
 However, I was worried about a few edge cases:
@@ -58,9 +58,9 @@ What the messages look like posted to discord.
 
 (the "room closed" followed right by "room open" are caused by people playing with the switch, and not any actual error in the hardware or software)
 
-![discord screenshot](img/ieee_discord.png)
+<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/ieee_discord.png" width=70% height=70%>
 
-#### Why use a physical switch instead of something like a motion/PIR sensor?
+##### Why use a physical switch instead of something like a motion/PIR sensor?
 I've been asked this a few times, so I figured I'd explain the reasoning here. 
 First off, the physical switch was a conscious design choice, for a few reasons 
 1. the sensor would be fine for sending the "room open" message, but it would also have to send the "room closed" message. The only way I've seen to do this reliably is to check for motion periodically, and after a certain time frame with no movement send the "closed" alert. This isn't really acceptable from a user trust standpoint, since there will be time when the last message in the channel is wrong, and says that the room is open when it isn't. If someone comes in that 15 minutes or so after the room closed and sees that it's not open, that significantly reduces trust in the system since it, by design, wouldn't always be accurate. 
