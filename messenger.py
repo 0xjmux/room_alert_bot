@@ -56,7 +56,6 @@ def send_room_alert(alert_code):
         json_data = poweroff_data
     else:
         json_data = interp_error_data
-        # this line is the one that throws an error when a connection fails
     try:
         result = requests.post(_creds_.WEBHOOK_URL, json = json_data)
     except ConnectionError as err:
