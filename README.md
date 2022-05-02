@@ -1,7 +1,7 @@
-# room_alert_bot
+# IEEE UCI Room Alert Switch
 Physical switch connected to a Discord bot to alert people in the IEEE UCI Discord when the room is open. 
 
-<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/final_mounted.JPG" width=80% height=80%>
+<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/final_mounted.JPG" width=70% height=70%>
 
 ### Why?
 I manage the lab room for the IEEE student chapter at UCI. We run a program called Open Project Space, or OPS, where we teach fellow students the basics of electronics and microcontrollers in a hands on fashion. Part of the program is students coming in to get help on their current projects, and the problem we kept running into was students asking if someone was in the room so that they could get help with their project. 
@@ -34,8 +34,8 @@ The design philosophy behind this was that I wanted it to be able to go on runni
 It runs on a Raspberry Pi Zero W, connected to Wifi. The electronics are really simple; it's really only a toggle switch, 2 LEDs, and a buck converter for DC step-down. It runs off ~12VDC, which was done for ease of use and because we 
 had plenty of 12V power supplies with 2.1mm barrel jacks. 
 
-<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/internals_1.JPG" width=50% height=50%>
-<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/internals_2.JPG" width=50% height=50%>
+<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/internals_1.JPG" width=40% height=40%>
+<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/internals_2.JPG" width=40% height=40%>
 
 
 ##### What about the code?
@@ -58,7 +58,7 @@ What the messages look like posted to discord.
 
 (the "room closed" followed right by "room open" are caused by people playing with the switch, and not any actual error in the hardware or software)
 
-<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/ieee_discord.png" width=70% height=70%>
+<img src="https://raw.githubusercontent.com/0xjmux/room_alert_bot/main/img/ieee_discord.png" width=60% height=60%>
 
 ##### Why use a physical switch instead of something like a motion/PIR sensor?
 I've been asked this a few times, so I figured I'd explain the reasoning here. 
